@@ -26,7 +26,7 @@ var drawMainCircle = (radius, values) => {
         range = -1000;
         values.forEach((value) => {
             if(Number(value[1]) > range){
-                range = Number(value[1]);
+                range = Number(value[1])
             }
         });
         var c = document.getElementById("main-canvas");
@@ -44,7 +44,12 @@ var drawMainCircle = (radius, values) => {
         if(range > 100){
             ctx.fillText("Range too high: " + range, centerX, centerY);
             return; 
-        }        
+        }  
+        if(values.length < 3){
+            ctx.fillText("Too few values, need at least three!", centerX, centerY);
+            return; 
+        }  
+              
         ctx.beginPath();
         
         //add the first value to the end of values, so we can loop around easily        
@@ -107,7 +112,7 @@ draw = function(){
     lines.forEach((line) => {
         if(line.includes(":")){
             cols = line.split(":");
-            values.push([cols[0].trim(), cols[1].trim()]);
+            values.push([cols[0].trim(), cols[1].trim()])
         }
     })
     drawMainCircle(350, values);
