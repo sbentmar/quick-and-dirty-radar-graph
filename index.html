@@ -1,0 +1,100 @@
+
+<html>
+    <head>
+        <script src = "http://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <style>
+        canvas{
+            border: 1px solid #000;
+        }
+        #main-json{
+            width: 1000px;
+            height: 150px;
+        }
+        </style>
+    </head>
+    <body>
+        <div id = "controls"><textarea id = "main-json">
+testing: 1
+automation: 2
+leading: 3
+        </textarea></div>
+        <canvas width = "1000" height = "800" id = "main-canvas"></canvas>
+    </body>
+    <script>
+var drawMainCircle = (radius, values) => {
+        range = -1000;
+        values.forEach((value) => {
+            if(Number(value[1]) > range){
+                range = Number(value[1])
+            }
+        });
+
+        console.log("RANGE: " + range)
+        var c = document.getElementById("main-canvas");
+        var ctx = c.getContext("2d");
+        ctx.canvas.width = ctx.canvas.width;
+        ctx.beginPath();
+        
+        ctx.translate(0.5, 0.5);
+        ctx.font = "28px Verdana";
+        ctx.textAlign = "center";
+        steps = values.length;
+        values.push(values[0]);
+        stepAngle = 2*3.141592653/steps;
+        ctx.strokeStyle = 'black';
+        for( let i = 0; i<=steps;i++){
+            ctx.moveTo(c.width/2, c.height/2);
+            ctx.lineTo(c.width/2+Math.cos((i+1)*stepAngle)*radius, c.height/2+Math.sin((i+1)*stepAngle)*radius);
+            ctx.stroke(); 
+
+            ctx.strokeStyle = '#999';
+            for(j = 0; j<=range;j++){
+                let rangeScale = j/range;
+                ctx.moveTo(c.width/2+Math.cos(i*stepAngle)*rangeScale*radius, c.height/2+Math.sin(i*stepAngle)*rangeScale*radius);
+                ctx.lineTo(c.width/2+Math.cos((i+1)*stepAngle)*rangeScale*radius, c.height/2+Math.sin((i+1)*stepAngle)*rangeScale*radius);
+                ctx.stroke()
+            }
+            ctx.strokeStyle = 'black';
+
+        }
+        ctx.fillStyle = "rgba(150, 150, 255, 0.5)";
+        ctx.beginPath();
+        let skillValue = values[0][1]/range;
+        ctx.moveTo(c.width/2+Math.cos(0)*skillValue*radius, c.height/2+Math.sin(0)*skillValue*radius);
+        for( let i = 0; i<=steps;i++){
+            if(i < steps){
+                skillValue = values[i+1][1]/range;
+                ctx.lineTo(c.width/2+Math.cos((i+1)*stepAngle)*skillValue*radius, c.height/2+Math.sin((i+1)*stepAngle)*skillValue*radius);
+                ctx.stroke();
+            }
+        }
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = 'white';
+        ctx.lineWidth = 4;
+        for( let i = 0; i<=steps;i++){
+            if(i < steps){
+                ctx.strokeText(values[i+1][0], c.width/2+Math.cos((i+1)*stepAngle)*radius, c.height/2+Math.sin((i+1)*stepAngle)*radius-10); 
+                ctx.fillText(values[i+1][0], c.width/2+Math.cos((i+1)*stepAngle)*radius, c.height/2+Math.sin((i+1)*stepAngle)*radius-10); 
+            }
+        }
+}
+draw = function(){
+    text = $("#main-json").val();
+    lines = text.split("\n")
+    values = []
+    lines.forEach((line) => {
+        if(line.includes(":")){
+            console.log(line);
+            cols = line.split(":");
+            values.push([cols[0].trim(), cols[1].trim()])
+        }
+    })
+    drawMainCircle(350, values);
+}
+$("#main-json").on("change keypress paste focus textInput input", draw);
+draw();
+    </script>
+</html>
+
